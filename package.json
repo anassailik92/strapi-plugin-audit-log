@@ -6,6 +6,7 @@
   "license": "MIT",
   "type": "commonjs",
   "exports": {
+    "./package.json": "./package.json",
     "./strapi-server": {
       "types":   "./dist/server/index.d.ts",
       "source":  "./src/server/index.ts",
@@ -15,7 +16,7 @@
     },
     "./strapi-admin": {
       "types":   "./dist/admin/index.d.ts",
-      "source":  "./src/admin/index.ts",
+      "source":  "./src/admin/index.tsx",
       "import":  "./dist/admin/index.mjs",
       "require": "./dist/admin/index.js",
       "default": "./dist/admin/index.js"
@@ -27,7 +28,7 @@
     "strapi-admin.js"
   ],
   "scripts": {
-    "build":   "pack-up build",
+    "build":   "pack-up build && tsc --declaration --emitDeclarationOnly --outDir dist",
     "watch":   "pack-up watch",
     "verify":  "pack-up verify",
     "prepublishOnly": "npm run build"
