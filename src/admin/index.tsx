@@ -22,7 +22,7 @@ const AuditLogIcon = () => (
 );
 
 export default {
-  bootstrap(app: any) {
+  register(app: any) {
     app.addMenuLink({
       to: '/plugins/audit-log',
       icon: AuditLogIcon,
@@ -37,4 +37,5 @@ export default {
       permissions: [],
     });
   },
+  bootstrap() {},
 };

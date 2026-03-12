@@ -13,7 +13,7 @@ const AuditLogIcon = () => /* @__PURE__ */ jsxRuntime.jsx(
   }
 );
 const index = {
-  bootstrap(app) {
+  register(app) {
     app.addMenuLink({
       to: "/plugins/audit-log",
       icon: AuditLogIcon,
@@ -22,11 +22,13 @@ const index = {
         defaultMessage: "Audit Logs"
       },
       Component: async () => {
-        const { default: Page } = await Promise.resolve().then(() => require("../_chunks/index-Dj8kZMv8.js"));
+        const { default: Page } = await Promise.resolve().then(() => require("../_chunks/index-D8-0ApjU.js"));
         return { default: Page };
       },
       permissions: []
     });
+  },
+  bootstrap() {
   }
 };
 module.exports = index;
