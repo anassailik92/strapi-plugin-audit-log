@@ -1,0 +1,50 @@
+{
+  "kind": "collectionType",
+  "collectionName": "audit_logs",
+  "info": {
+    "singularName": "audit-log",
+    "pluralName": "audit-logs",
+    "displayName": "Audit Log",
+    "description": "Tracks all create, update, and delete operations across all content types"
+  },
+  "options": {
+    "draftAndPublish": false
+  },
+  "pluginOptions": {
+    "content-manager": {
+      "visible": true
+    }
+  },
+  "attributes": {
+    "action": {
+      "type": "enumeration",
+      "enum": ["create", "update", "delete"],
+      "required": true
+    },
+    "contentType": {
+      "type": "string",
+      "required": true
+    },
+    "entityId": {
+      "type": "string"
+    },
+    "userId": {
+      "type": "string"
+    },
+    "userEmail": {
+      "type": "string"
+    },
+    "userName": {
+      "type": "string"
+    },
+    "before": {
+      "type": "json"
+    },
+    "after": {
+      "type": "json"
+    },
+    "ip": {
+      "type": "string"
+    }
+  }
+}

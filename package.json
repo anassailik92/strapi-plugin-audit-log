@@ -1,0 +1,54 @@
+{
+  "name": "strapi-plugin-audit-log",
+  "version": "1.0.0",
+  "description": "Automatic audit logging (create / update / delete) for Strapi v5 with a built-in admin panel page.",
+  "keywords": ["strapi", "plugin", "audit", "audit-log", "logging", "history"],
+  "license": "MIT",
+  "type": "commonjs",
+  "exports": {
+    "./strapi-server": {
+      "types":   "./dist/server/index.d.ts",
+      "source":  "./src/server/index.ts",
+      "import":  "./dist/server/index.mjs",
+      "require": "./dist/server/index.js",
+      "default": "./dist/server/index.js"
+    },
+    "./strapi-admin": {
+      "types":   "./dist/admin/index.d.ts",
+      "source":  "./src/admin/index.ts",
+      "import":  "./dist/admin/index.mjs",
+      "require": "./dist/admin/index.js",
+      "default": "./dist/admin/index.js"
+    }
+  },
+  "files": [
+    "dist",
+    "strapi-server.js",
+    "strapi-admin.js"
+  ],
+  "scripts": {
+    "build":   "pack-up build",
+    "watch":   "pack-up watch",
+    "verify":  "pack-up verify",
+    "prepublishOnly": "npm run build"
+  },
+  "strapi": {
+    "kind":        "plugin",
+    "name":        "audit-log",
+    "displayName": "Audit Log",
+    "description": "Automatic audit logging for Strapi v5"
+  },
+  "peerDependencies": {
+    "@strapi/strapi": "^5.0.0",
+    "react":     "^18.0.0",
+    "react-dom": "^18.0.0"
+  },
+  "devDependencies": {
+    "@strapi/pack-up": "^5.0.0",
+    "@strapi/strapi":  "5.15.0",
+    "@types/react":    "^18.0.0",
+    "react":           "^18.0.0",
+    "react-dom":       "^18.0.0",
+    "typescript":      "^5.0.0"
+  }
+}

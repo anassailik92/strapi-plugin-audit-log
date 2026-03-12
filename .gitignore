@@ -1,0 +1,9 @@
+node_modules/
+
+# Don't ignore dist/ — it must be committed so the package works when
+# installed directly from GitHub without a build step.
+# dist/
+
+*.log
+.DS_Store
+.env
