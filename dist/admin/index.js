@@ -1,5 +1,8 @@
 "use strict";
 const jsxRuntime = require("react/jsx-runtime");
+const React = require("react");
+const _interopDefault = (e) => e && e.__esModule ? e : { default: e };
+const React__default = /* @__PURE__ */ _interopDefault(React);
 const AuditLogIcon = () => /* @__PURE__ */ jsxRuntime.jsx(
   "svg",
   {
@@ -21,10 +24,7 @@ const index = {
         id: "audit-log.plugin.name",
         defaultMessage: "Audit Logs"
       },
-      Component: async () => {
-        const { default: Page } = await Promise.resolve().then(() => require("../_chunks/index-D8-0ApjU.js"));
-        return { default: Page };
-      },
+      Component: React__default.default.lazy(() => Promise.resolve().then(() => require("../_chunks/index-Dj8kZMv8.js"))),
       permissions: []
     });
   },

@@ -30,10 +30,7 @@ export default {
         id:             'audit-log.plugin.name',
         defaultMessage: 'Audit Logs',
       },
-      Component: async () => {
-        const { default: Page } = await import('./pages/AuditLog');
-        return { default: Page };
-      },
+      Component: React.lazy(() => import('./pages/AuditLog')),
       permissions: [],
     });
   },
