@@ -12,8 +12,8 @@ const AuditLogIcon = () => (
   <svg
     xmlns="http://www.w3.org/2000/svg"
     viewBox="0 0 32 32"
-    width="1em"
-    height="1em"
+    width="1.2em"
+    height="1.2em"
     fill="currentColor"
     aria-hidden="true"
   >
@@ -30,7 +30,7 @@ export default {
         id:             'audit-log.plugin.name',
         defaultMessage: 'Audit Logs',
       },
-      Component: React.lazy(() => import('./pages/AuditLog')),
+      Component: async () => import('./pages/AuditLog'),
       permissions: [],
     });
   },
