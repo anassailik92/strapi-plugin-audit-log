@@ -27,10 +27,8 @@ function getAuthHeader(): Record<string, string> {
   return {};
 }
 
-const BASE = '/admin'; // Strapi admin API prefix when accessed from the admin panel
-
 async function apiGet(path: string): Promise<any> {
-  const res = await fetch(`${BASE}${path}`, {
+  const res = await fetch(path, {
     headers: { 'Content-Type': 'application/json', ...getAuthHeader() },
     credentials: 'include',
   });
@@ -38,12 +36,11 @@ async function apiGet(path: string): Promise<any> {
   return res.json();
 }
 
-async function apiPost(path: string, body: unknown): Promise<any> {
-  const res = await fetch(`${BASE}${path}`, {
-    method: 'POST',
+async function apiDelete(path: string): Promise<any> {
+  const res = await fetch(path, {
+    method: 'DELETE',
     headers: { 'Content-Type': 'application/json', ...getAuthHeader() },
     credentials: 'include',
-    body: JSON.stringify(body),
   });
   if (!res.ok) throw Object.assign(new Error(`HTTP ${res.status}`), { response: res });
   return res.json();
@@ -185,7 +182,7 @@ export default function AuditLogPage() {
         if (f.contentType)  params.set('filters[contentType][$containsi]',  f.contentType);
         if (f.userEmail)    params.set('filters[userEmail][$containsi]',    f.userEmail);
 
-        const data = await apiGet(`/content-manager/collection-types/${COLLECTION_UID}?${params}`);
+        const data = await apiGet(`/api/audit-logs?${params}`);
         setLogs(data.results ?? data.data ?? []);
         const meta: PaginationState = data.pagination ?? data.meta?.pagination ?? { page: 1, pageSize: 20, pageCount: 0, total: 0 };
         setPagination({ ...meta, page });
@@ -208,18 +205,7 @@ export default function AuditLogPage() {
     setDeleting(true);
     setError(null);
     try {
-      let page = 1;
-      const allDocIds: string[] = [];
-      while (true) {
-        const data = await apiGet(`/content-manager/collection-types/${COLLECTION_UID}?pageSize=200&page=${page}`);
-        const results: AuditLogEntry[] = data.results ?? data.data ?? [];
-        for (const r of results) if (r.documentId) allDocIds.push(r.documentId);
-        const meta = data.pagination ?? data.meta?.pagination;
-        if (!meta || page >= (meta.pageCount ?? 1)) break;
-        page++;
-      }
-      if (allDocIds.length === 0) return;
-      await apiPost(`/content-manager/collection-types/${COLLECTION_UID}/actions/bulkDelete`, { documentIds: allDocIds });
+      await apiDelete('/api/audit-logs');
       await fetchLogs(1);
     } catch (err: any) {
       setError(err?.response?.data?.error?.message ?? err?.message ?? 'Failed to delete audit logs');

@@ -88,6 +88,7 @@ declare const _default: {
         }) => {
             find(ctx: any): Promise<void>;
             findOne(ctx: any): Promise<any>;
+            deleteAll(ctx: any): Promise<void>;
             create(ctx: any): Promise<any>;
             update(ctx: any): Promise<any>;
             delete(ctx: any): Promise<any>;

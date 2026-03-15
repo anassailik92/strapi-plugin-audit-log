@@ -12,26 +12,23 @@ function getAuthHeader() {
   }
   return {};
 }
-const BASE = "/admin";
 async function apiGet(path) {
-  const res = await fetch(`${BASE}${path}`, {
+  const res = await fetch(path, {
     headers: { "Content-Type": "application/json", ...getAuthHeader() },
     credentials: "include"
   });
   if (!res.ok) throw Object.assign(new Error(`HTTP ${res.status}`), { response: res });
   return res.json();
 }
-async function apiPost(path, body) {
-  const res = await fetch(`${BASE}${path}`, {
-    method: "POST",
+async function apiDelete(path) {
+  const res = await fetch(path, {
+    method: "DELETE",
     headers: { "Content-Type": "application/json", ...getAuthHeader() },
-    credentials: "include",
-    body: JSON.stringify(body)
+    credentials: "include"
   });
   if (!res.ok) throw Object.assign(new Error(`HTTP ${res.status}`), { response: res });
   return res.json();
 }
-const COLLECTION_UID = "plugin::audit-log.audit-log";
 const ACTION_STYLE = {
   create: { background: "#d4edda", color: "#155724", border: "1px solid #c3e6cb" },
   update: { background: "#fff3cd", color: "#856404", border: "1px solid #ffeeba" },
@@ -116,7 +113,7 @@ function AuditLogPage() {
         if (f.action) params.set("filters[action][$eq]", f.action);
         if (f.contentType) params.set("filters[contentType][$containsi]", f.contentType);
         if (f.userEmail) params.set("filters[userEmail][$containsi]", f.userEmail);
-        const data = await apiGet(`/content-manager/collection-types/${COLLECTION_UID}?${params}`);
+        const data = await apiGet(`/api/audit-logs?${params}`);
         setLogs(data.results ?? data.data ?? []);
         const meta = data.pagination ?? data.meta?.pagination ?? { page: 1, pageSize: 20, pageCount: 0, total: 0 };
         setPagination({ ...meta, page });
@@ -139,18 +136,7 @@ function AuditLogPage() {
     setDeleting(true);
     setError(null);
     try {
-      let page = 1;
-      const allDocIds = [];
-      while (true) {
-        const data = await apiGet(`/content-manager/collection-types/${COLLECTION_UID}?pageSize=200&page=${page}`);
-        const results = data.results ?? data.data ?? [];
-        for (const r of results) if (r.documentId) allDocIds.push(r.documentId);
-        const meta = data.pagination ?? data.meta?.pagination;
-        if (!meta || page >= (meta.pageCount ?? 1)) break;
-        page++;
-      }
-      if (allDocIds.length === 0) return;
-      await apiPost(`/content-manager/collection-types/${COLLECTION_UID}/actions/bulkDelete`, { documentIds: allDocIds });
+      await apiDelete("/api/audit-logs");
       await fetchLogs(1);
     } catch (err) {
       setError(err?.response?.data?.error?.message ?? err?.message ?? "Failed to delete audit logs");
@@ -287,4 +273,4 @@ const btnPage = { padding: "6px 14px", borderRadius: "4px", border: "1px solid #
 const btnView = { padding: "4px 12px", background: "#fff", border: "1px solid #4945ff", borderRadius: "4px", fontSize: "12px", cursor: "pointer", color: "#4945ff", fontWeight: 600 };
 const tdStyle = { padding: "12px 16px", fontSize: "13px", verticalAlign: "middle" };
 exports.default = AuditLogPage;
-//# sourceMappingURL=index-CANpXNur.js.map
+//# sourceMappingURL=index-D8KUUmsy.js.map

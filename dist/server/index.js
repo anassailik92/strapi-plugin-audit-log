@@ -239,6 +239,10 @@ const controller = ({ strapi }) => ({
     if (!entry) return ctx.notFound();
     ctx.body = { data: entry };
   },
+  async deleteAll(ctx) {
+    await strapi.db.query(PLUGIN_UID).deleteMany({ where: {} });
+    ctx.body = { message: "All audit logs deleted." };
+  },
   async create(ctx) {
     return ctx.forbidden("Audit logs are created automatically and cannot be written via the API.");
   },
@@ -264,6 +268,12 @@ const routes = {
         method: "GET",
         path: "/audit-logs/:id",
         handler: "audit-log.findOne",
+        config: { policies: [], auth: false }
+      },
+      {
+        method: "DELETE",
+        path: "/audit-logs",
+        handler: "audit-log.deleteAll",
         config: { policies: [], auth: false }
       }
     ]

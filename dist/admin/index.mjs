@@ -25,7 +25,7 @@ const index = {
     app.router.addRoute({
       path: "plugins/audit-log/*",
       lazy: async () => {
-        const { default: Component } = await import("../_chunks/index-yhHCN2kQ.mjs");
+        const { default: Component } = await import("../_chunks/index-c2XzbnPD.mjs");
         return { Component };
       }
     });

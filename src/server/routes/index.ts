@@ -19,6 +19,12 @@ export default {
         handler: 'audit-log.findOne',
         config:  { policies: [], auth: false },
       },
+      {
+        method:  'DELETE',
+        path:    '/audit-logs',
+        handler: 'audit-log.deleteAll',
+        config:  { policies: [], auth: false },
+      },
     ],
   },
 };

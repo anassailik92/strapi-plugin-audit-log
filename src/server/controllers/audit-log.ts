@@ -36,6 +36,11 @@ const controller = ({ strapi }: { strapi: any }) => ({
     ctx.body = { data: entry };
   },
 
+  async deleteAll(ctx: any) {
+    await strapi.db.query(PLUGIN_UID).deleteMany({ where: {} });
+    ctx.body = { message: 'All audit logs deleted.' };
+  },
+
   async create(ctx: any) {
     return ctx.forbidden('Audit logs are created automatically and cannot be written via the API.');
   },
