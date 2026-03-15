@@ -1,7 +1,7 @@
 "use strict";
 Object.defineProperty(exports, Symbol.toStringTag, { value: "Module" });
 const jsxRuntime = require("react/jsx-runtime");
-const React = require("react");
+const react = require("react");
 function getAuthHeader() {
   try {
     const raw = localStorage.getItem("jwtToken") ?? sessionStorage.getItem("jwtToken");
@@ -39,7 +39,7 @@ const ACTION_STYLE = {
 };
 const EMPTY_FILTERS = { action: "", contentType: "", userEmail: "" };
 function DetailModal({ log, onClose }) {
-  React.useEffect(() => {
+  react.useEffect(() => {
     const handler = (e) => e.key === "Escape" && onClose();
     window.addEventListener("keydown", handler);
     return () => window.removeEventListener("keydown", handler);
@@ -97,16 +97,16 @@ function DetailModal({ log, onClose }) {
   );
 }
 function AuditLogPage() {
-  const [logs, setLogs] = React.useState([]);
-  const [pagination, setPagination] = React.useState({ page: 1, pageSize: 20, pageCount: 0, total: 0 });
-  const [loading, setLoading] = React.useState(false);
-  const [deleting, setDeleting] = React.useState(false);
-  const [error, setError] = React.useState(null);
-  const [filters, setFilters] = React.useState(EMPTY_FILTERS);
-  const [selected, setSelected] = React.useState(null);
-  const filtersRef = React.useRef(filters);
+  const [logs, setLogs] = react.useState([]);
+  const [pagination, setPagination] = react.useState({ page: 1, pageSize: 20, pageCount: 0, total: 0 });
+  const [loading, setLoading] = react.useState(false);
+  const [deleting, setDeleting] = react.useState(false);
+  const [error, setError] = react.useState(null);
+  const [filters, setFilters] = react.useState(EMPTY_FILTERS);
+  const [selected, setSelected] = react.useState(null);
+  const filtersRef = react.useRef(filters);
   filtersRef.current = filters;
-  const fetchLogs = React.useCallback(
+  const fetchLogs = react.useCallback(
     async (page, overrideFilters) => {
       const f = overrideFilters ?? filtersRef.current;
       setLoading(true);
@@ -131,10 +131,10 @@ function AuditLogPage() {
     },
     []
   );
-  React.useEffect(() => {
+  react.useEffect(() => {
     fetchLogs(1);
   }, []);
-  const deleteAll = React.useCallback(async () => {
+  const deleteAll = react.useCallback(async () => {
     if (!window.confirm("⚠️ Are you sure you want to delete ALL audit logs?\nThis action cannot be undone.")) return;
     setDeleting(true);
     setError(null);
@@ -287,4 +287,4 @@ const btnPage = { padding: "6px 14px", borderRadius: "4px", border: "1px solid #
 const btnView = { padding: "4px 12px", background: "#fff", border: "1px solid #4945ff", borderRadius: "4px", fontSize: "12px", cursor: "pointer", color: "#4945ff", fontWeight: 600 };
 const tdStyle = { padding: "12px 16px", fontSize: "13px", verticalAlign: "middle" };
 exports.default = AuditLogPage;
-//# sourceMappingURL=index-BD0j_IhD.js.map
+//# sourceMappingURL=index-CANpXNur.js.map
