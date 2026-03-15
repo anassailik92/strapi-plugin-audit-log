@@ -14,7 +14,40 @@
  */
 
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { useFetchClient } from '@strapi/admin/strapi-admin';
+
+// ─── Fetch helpers (no external deps — avoids duplicate-React bundle issue) ──
+function getAuthHeader(): Record<string, string> {
+  try {
+    const raw = localStorage.getItem('jwtToken') ?? sessionStorage.getItem('jwtToken');
+    if (raw) return { Authorization: `Bearer ${raw}` };
+    // Strapi v5 stores auth in a different key in some versions
+    const auth = localStorage.getItem('strapi-admin-token') ?? sessionStorage.getItem('strapi-admin-token');
+    if (auth) return { Authorization: `Bearer ${auth}` };
+  } catch { /* ignore */ }
+  return {};
+}
+
+const BASE = '/admin'; // Strapi admin API prefix when accessed from the admin panel
+
+async function apiGet(path: string): Promise<any> {
+  const res = await fetch(`${BASE}${path}`, {
+    headers: { 'Content-Type': 'application/json', ...getAuthHeader() },
+    credentials: 'include',
+  });
+  if (!res.ok) throw Object.assign(new Error(`HTTP ${res.status}`), { response: res });
+  return res.json();
+}
+
+async function apiPost(path: string, body: unknown): Promise<any> {
+  const res = await fetch(`${BASE}${path}`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...getAuthHeader() },
+    credentials: 'include',
+    body: JSON.stringify(body),
+  });
+  if (!res.ok) throw Object.assign(new Error(`HTTP ${res.status}`), { response: res });
+  return res.json();
+}
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -130,8 +163,6 @@ function DetailModal({ log, onClose }: { log: AuditLogEntry; onClose: () => void
 // ─── Main Page ────────────────────────────────────────────────────────────────
 
 export default function AuditLogPage() {
-  const { get, post } = useFetchClient();
-
   const [logs, setLogs]           = useState<AuditLogEntry[]>([]);
   const [pagination, setPagination] = useState<PaginationState>({ page: 1, pageSize: 20, pageCount: 0, total: 0 });
   const [loading, setLoading]     = useState(false);
@@ -154,7 +185,7 @@ export default function AuditLogPage() {
         if (f.contentType)  params.set('filters[contentType][$containsi]',  f.contentType);
         if (f.userEmail)    params.set('filters[userEmail][$containsi]',    f.userEmail);
 
-        const { data } = await get(`/content-manager/collection-types/${COLLECTION_UID}?${params}`);
+        const data = await apiGet(`/content-manager/collection-types/${COLLECTION_UID}?${params}`);
         setLogs(data.results ?? data.data ?? []);
         const meta: PaginationState = data.pagination ?? data.meta?.pagination ?? { page: 1, pageSize: 20, pageCount: 0, total: 0 };
         setPagination({ ...meta, page });
@@ -167,7 +198,7 @@ export default function AuditLogPage() {
         setLoading(false);
       }
     },
-    [get]
+    []
   );
 
   useEffect(() => { fetchLogs(1); }, []); // eslint-disable-line
@@ -180,7 +211,7 @@ export default function AuditLogPage() {
       let page = 1;
       const allDocIds: string[] = [];
       while (true) {
-        const { data } = await get(`/content-manager/collection-types/${COLLECTION_UID}?pageSize=200&page=${page}`);
+        const data = await apiGet(`/content-manager/collection-types/${COLLECTION_UID}?pageSize=200&page=${page}`);
         const results: AuditLogEntry[] = data.results ?? data.data ?? [];
         for (const r of results) if (r.documentId) allDocIds.push(r.documentId);
         const meta = data.pagination ?? data.meta?.pagination;
@@ -188,7 +219,7 @@ export default function AuditLogPage() {
         page++;
       }
       if (allDocIds.length === 0) return;
-      await post(`/content-manager/collection-types/${COLLECTION_UID}/actions/bulkDelete`, { documentIds: allDocIds });
+      await apiPost(`/content-manager/collection-types/${COLLECTION_UID}/actions/bulkDelete`, { documentIds: allDocIds });
       await fetchLogs(1);
     } catch (err: any) {
       setError(err?.response?.data?.error?.message ?? err?.message ?? 'Failed to delete audit logs');
@@ -196,7 +227,7 @@ export default function AuditLogPage() {
     } finally {
       setDeleting(false);
     }
-  }, [get, post, fetchLogs]);
+  }, [fetchLogs]);
 
   const applyFilters = () => fetchLogs(1);
   const clearFilters = () => { const c = EMPTY_FILTERS; setFilters(c); fetchLogs(1, c); };

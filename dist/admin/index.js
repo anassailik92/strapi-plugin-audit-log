@@ -7,7 +7,7 @@ const AuditLogIcon = () => /* @__PURE__ */ jsxRuntime.jsx(
   "svg",
   {
     xmlns: "http://www.w3.org/2000/svg",
-    viewBox: "0 0 24 24",
+    viewBox: "0 0 23 32",
     width: "1em",
     height: "1em",
     fill: "currentColor",
@@ -24,7 +24,7 @@ const index = {
         id: "audit-log.plugin.name",
         defaultMessage: "Audit Logs"
       },
-      Component: React__default.default.lazy(() => Promise.resolve().then(() => require("../_chunks/index-Dj8kZMv8.js"))),
+      Component: React__default.default.lazy(() => Promise.resolve().then(() => require("../_chunks/index-BD0j_IhD.js"))),
       permissions: []
     });
   },

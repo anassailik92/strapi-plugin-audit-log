@@ -1,10 +1,10 @@
 import { jsx } from "react/jsx-runtime";
-import React__default from "react";
+import React from "react";
 const AuditLogIcon = () => /* @__PURE__ */ jsx(
   "svg",
   {
     xmlns: "http://www.w3.org/2000/svg",
-    viewBox: "0 0 24 24",
+    viewBox: "0 0 23 32",
     width: "1em",
     height: "1em",
     fill: "currentColor",
@@ -21,7 +21,7 @@ const index = {
         id: "audit-log.plugin.name",
         defaultMessage: "Audit Logs"
       },
-      Component: React__default.lazy(() => import("../_chunks/index-QZst22ud.mjs")),
+      Component: React.lazy(() => import("../_chunks/index-yhHCN2kQ.mjs")),
       permissions: []
     });
   },
