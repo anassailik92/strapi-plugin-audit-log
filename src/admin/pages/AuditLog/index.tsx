@@ -14,37 +14,7 @@
  */
 
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-
-// ─── Fetch helpers (no external deps — avoids duplicate-React bundle issue) ──
-function getAuthHeader(): Record<string, string> {
-  try {
-    const raw = localStorage.getItem('jwtToken') ?? sessionStorage.getItem('jwtToken');
-    if (raw) return { Authorization: `Bearer ${raw}` };
-    // Strapi v5 stores auth in a different key in some versions
-    const auth = localStorage.getItem('strapi-admin-token') ?? sessionStorage.getItem('strapi-admin-token');
-    if (auth) return { Authorization: `Bearer ${auth}` };
-  } catch { /* ignore */ }
-  return {};
-}
-
-async function apiGet(path: string): Promise<any> {
-  const res = await fetch(path, {
-    headers: { 'Content-Type': 'application/json', ...getAuthHeader() },
-    credentials: 'include',
-  });
-  if (!res.ok) throw Object.assign(new Error(`HTTP ${res.status}`), { response: res });
-  return res.json();
-}
-
-async function apiDelete(path: string): Promise<any> {
-  const res = await fetch(path, {
-    method: 'DELETE',
-    headers: { 'Content-Type': 'application/json', ...getAuthHeader() },
-    credentials: 'include',
-  });
-  if (!res.ok) throw Object.assign(new Error(`HTTP ${res.status}`), { response: res });
-  return res.json();
-}
+import { useFetchClient } from '@strapi/admin/strapi-admin';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -160,6 +130,8 @@ function DetailModal({ log, onClose }: { log: AuditLogEntry; onClose: () => void
 // ─── Main Page ────────────────────────────────────────────────────────────────
 
 export default function AuditLogPage() {
+  const { get, del } = useFetchClient();
+
   const [logs, setLogs]           = useState<AuditLogEntry[]>([]);
   const [pagination, setPagination] = useState<PaginationState>({ page: 1, pageSize: 20, pageCount: 0, total: 0 });
   const [loading, setLoading]     = useState(false);
@@ -170,6 +142,10 @@ export default function AuditLogPage() {
 
   const filtersRef = useRef(filters);
   filtersRef.current = filters;
+
+  // Store fetch client in ref so callbacks don't need it as a dep
+  const fetchRef = useRef({ get, del });
+  fetchRef.current = { get, del };
 
   const fetchLogs = useCallback(
     async (page: number, overrideFilters?: Filters) => {
@@ -182,7 +158,7 @@ export default function AuditLogPage() {
         if (f.contentType)  params.set('filters[contentType][$containsi]',  f.contentType);
         if (f.userEmail)    params.set('filters[userEmail][$containsi]',    f.userEmail);
 
-        const data = await apiGet(`/api/audit-logs?${params}`);
+        const { data } = await fetchRef.current.get(`/audit-logs?${params}`);
         setLogs(data.results ?? data.data ?? []);
         const meta: PaginationState = data.pagination ?? data.meta?.pagination ?? { page: 1, pageSize: 20, pageCount: 0, total: 0 };
         setPagination({ ...meta, page });
@@ -205,7 +181,7 @@ export default function AuditLogPage() {
     setDeleting(true);
     setError(null);
     try {
-      await apiDelete('/api/audit-logs');
+      await fetchRef.current.del('/audit-logs');
       await fetchLogs(1);
     } catch (err: any) {
       setError(err?.response?.data?.error?.message ?? err?.message ?? 'Failed to delete audit logs');

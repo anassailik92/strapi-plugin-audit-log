@@ -46,6 +46,7 @@
     "react-dom": "^18.0.0"
   },
   "devDependencies": {
+    "@strapi/admin":   "^5.0.0",
     "@strapi/pack-up": "^5.0.0",
     "@strapi/strapi":  "5.15.0",
     "@types/react":    "^18.0.0",

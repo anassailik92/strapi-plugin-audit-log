@@ -5,25 +5,25 @@
 
 export default {
   'audit-log': {
-    type: 'content-api',
+    type: 'admin',
     routes: [
       {
         method:  'GET',
         path:    '/audit-logs',
         handler: 'audit-log.find',
-        config:  { policies: [], auth: false },
+        config:  { policies: [] },
       },
       {
         method:  'GET',
         path:    '/audit-logs/:id',
         handler: 'audit-log.findOne',
-        config:  { policies: [], auth: false },
+        config:  { policies: [] },
       },
       {
         method:  'DELETE',
         path:    '/audit-logs',
         handler: 'audit-log.deleteAll',
-        config:  { policies: [], auth: false },
+        config:  { policies: [] },
       },
     ],
   },

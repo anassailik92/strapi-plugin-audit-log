@@ -1,32 +1,6 @@
 import { jsxs, jsx, Fragment } from "react/jsx-runtime";
 import { useState, useRef, useCallback, useEffect } from "react";
-function getAuthHeader() {
-  try {
-    const raw = localStorage.getItem("jwtToken") ?? sessionStorage.getItem("jwtToken");
-    if (raw) return { Authorization: `Bearer ${raw}` };
-    const auth = localStorage.getItem("strapi-admin-token") ?? sessionStorage.getItem("strapi-admin-token");
-    if (auth) return { Authorization: `Bearer ${auth}` };
-  } catch {
-  }
-  return {};
-}
-async function apiGet(path) {
-  const res = await fetch(path, {
-    headers: { "Content-Type": "application/json", ...getAuthHeader() },
-    credentials: "include"
-  });
-  if (!res.ok) throw Object.assign(new Error(`HTTP ${res.status}`), { response: res });
-  return res.json();
-}
-async function apiDelete(path) {
-  const res = await fetch(path, {
-    method: "DELETE",
-    headers: { "Content-Type": "application/json", ...getAuthHeader() },
-    credentials: "include"
-  });
-  if (!res.ok) throw Object.assign(new Error(`HTTP ${res.status}`), { response: res });
-  return res.json();
-}
+import { useFetchClient } from "@strapi/admin/strapi-admin";
 const ACTION_STYLE = {
   create: { background: "#d4edda", color: "#155724", border: "1px solid #c3e6cb" },
   update: { background: "#fff3cd", color: "#856404", border: "1px solid #ffeeba" },
@@ -92,6 +66,7 @@ function DetailModal({ log, onClose }) {
   );
 }
 function AuditLogPage() {
+  const { get, del } = useFetchClient();
   const [logs, setLogs] = useState([]);
   const [pagination, setPagination] = useState({ page: 1, pageSize: 20, pageCount: 0, total: 0 });
   const [loading, setLoading] = useState(false);
@@ -101,6 +76,8 @@ function AuditLogPage() {
   const [selected, setSelected] = useState(null);
   const filtersRef = useRef(filters);
   filtersRef.current = filters;
+  const fetchRef = useRef({ get, del });
+  fetchRef.current = { get, del };
   const fetchLogs = useCallback(
     async (page, overrideFilters) => {
       const f = overrideFilters ?? filtersRef.current;
@@ -111,7 +88,7 @@ function AuditLogPage() {
         if (f.action) params.set("filters[action][$eq]", f.action);
         if (f.contentType) params.set("filters[contentType][$containsi]", f.contentType);
         if (f.userEmail) params.set("filters[userEmail][$containsi]", f.userEmail);
-        const data = await apiGet(`/api/audit-logs?${params}`);
+        const { data } = await fetchRef.current.get(`/audit-logs?${params}`);
         setLogs(data.results ?? data.data ?? []);
         const meta = data.pagination ?? data.meta?.pagination ?? { page: 1, pageSize: 20, pageCount: 0, total: 0 };
         setPagination({ ...meta, page });
@@ -134,7 +111,7 @@ function AuditLogPage() {
     setDeleting(true);
     setError(null);
     try {
-      await apiDelete("/api/audit-logs");
+      await fetchRef.current.del("/audit-logs");
       await fetchLogs(1);
     } catch (err) {
       setError(err?.response?.data?.error?.message ?? err?.message ?? "Failed to delete audit logs");
@@ -273,4 +250,4 @@ const tdStyle = { padding: "12px 16px", fontSize: "13px", verticalAlign: "middle
 export {
   AuditLogPage as default
 };
-//# sourceMappingURL=index-c2XzbnPD.mjs.map
+//# sourceMappingURL=index-ia4a42gl.mjs.map

@@ -11,7 +11,6 @@ declare const _default: {
             handler: string;
             config: {
                 policies: any[];
-                auth: boolean;
             };
         }[];
     };
