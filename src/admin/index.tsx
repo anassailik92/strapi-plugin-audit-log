@@ -12,8 +12,8 @@ const AuditLogIcon = () => (
   <svg
     xmlns="http://www.w3.org/2000/svg"
     viewBox="0 0 32 32"
-    width="1.2em"
-    height="1.2em"
+    width="1.5em"
+    height="1.5em"
     fill="currentColor"
     aria-hidden="true"
   >
@@ -24,14 +24,21 @@ const AuditLogIcon = () => (
 export default {
   register(app: any) {
     app.addMenuLink({
-      to: '/plugins/audit-log',
+      to: 'plugins/audit-log',
       icon: AuditLogIcon,
       intlLabel: {
         id:             'audit-log.plugin.name',
         defaultMessage: 'Audit Logs',
       },
-      Component: async () => import('./pages/AuditLog'),
       permissions: [],
+    });
+
+    app.router.addRoute({
+      path: 'plugins/audit-log/*',
+      lazy: async () => {
+        const { default: Component } = await import('./pages/AuditLog');
+        return { Component };
+      },
     });
   },
   bootstrap() {},
